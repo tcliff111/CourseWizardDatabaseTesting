@@ -62,4 +62,15 @@ class Department: NSObject {
         }
     }
     
+    static func getDepartmentWithID(id: String,   success: @escaping (Department)->()) {
+        let query = PFQuery(className: "Department")
+        
+        query.getObjectInBackground(withId: id) { (obj: PFObject?, error: Error?) in
+            if let obj = obj {
+                let department = Department(department: obj)
+                success(department)
+            }
+        }
+        
+    }
 }

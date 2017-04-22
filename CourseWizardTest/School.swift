@@ -14,6 +14,28 @@ class School: NSObject {
     var id: String?
     var name: String?
     
+    init(school: PFObject) {
+        super.init()
+        self.id = school.objectId
+        self.name = school["name"] as? String
+    }
+    
+    static func getSchools(success: @escaping ([School])->()) {
+        let query = PFQuery(className: "School")
+        
+        query.findObjectsInBackground { (objects: [PFObject]?, error: Error?) in
+            if let objects = objects {
+                var schoolsArray: [School] = []
+                for object in objects {
+                    schoolsArray.append(School(school: object))
+                }
+                success(schoolsArray)
+            }
+            else {
+                print(error?.localizedDescription ?? "error")
+            }
+        }
+    }
 
     func getDepartments(success: @escaping ([Department])->()) {
         
@@ -59,6 +81,18 @@ class School: NSObject {
                 success()
             }
         }
+    }
+    
+    static func getSchoolWithID(id: String,   success: @escaping (School)->()) {
+        let query = PFQuery(className: "School")
+        
+        query.getObjectInBackground(withId: id) { (obj: PFObject?, error: Error?) in
+            if let obj = obj {
+                let school = School(school: obj)
+                success(school)
+            }
+        }
+        
     }
     
     
